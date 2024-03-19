@@ -1,0 +1,110 @@
+# Importa las bibliotecas necesarias (esto puede variar según tu stack tecnológico)
+import flask
+from flask import request, jsonify
+
+# Crea una instancia de la aplicación Flask
+app = flask.Flask(__name__)
+
+# Base de datos simulada para almacenar perfiles de usuarios y monedas
+usuarios = {}
+monedas = {}
+
+# Rutas de la aplicación
+@app.route('/')
+def inicio():
+    return "¡Bienvenidos a Mundovirtual!"
+
+@app.route('/crear_perfil', methods=['POST'])
+def crear_perfil():
+    # Recibe los datos del usuario (nombre, Gmail, contraseña, etc.)
+    datos_usuario = request.get_json()
+    # Crea un perfil en la base de datos (simulado aquí)
+    usuarios[datos_usuario['nombre']] = {
+        'gmail': datos_usuario['gmail'],
+        'contrasena': datos_usuario['contrasena'],
+        'fotos_portada': []
+    }
+    return "Perfil creado exitosamente"
+
+@app.route('/agregar_foto_portada', methods=['POST'])
+def agregar_foto_portada():
+    # Recibe el nombre del usuario y la URL de la foto de portada
+    datos_foto = request.get_json()
+    # Agrega la foto de portada al perfil del usuario
+    usuarios[datos_foto['nombre']]['fotos_portada'].append(datos_foto['url'])
+    return "Foto de portada agregada"
+
+@app.route('/crear_moneda', methods=['POST'])
+def crear_moneda():
+    # Recibe el nombre de la moneda
+    nombre_moneda = request.get_json()['nombre']
+    # Crea la moneda en la base de datos (simulado aquí)
+    monedas[nombre_moneda] = 0
+    return f"Moneda {nombre_moneda} creada"
+
+# Otras rutas y funcionalidades deben agregarse aquí
+
+if __name__ == '__main__':
+    app.run(debug=True)
+# Rutas adicionales y funcionalidades
+
+@app.route('/enviar_mensaje', methods=['POST'])
+def enviar_mensaje():
+    # Recibe el nombre del remitente, destinatario y el contenido del mensaje
+    datos_mensaje = request.get_json()
+    # Simulación: guarda el mensaje en una base de datos o envía en tiempo real
+    # Aquí puedes implementar la lógica para notificar al destinatario
+    return "Mensaje enviado correctamente"
+
+@app.route('/comprar_moneda', methods=['POST'])
+def comprar_moneda():
+    # Recibe el nombre del usuario y la cantidad de monedas a comprar
+    datos_compra = request.get_json()
+    # Simulación: actualiza el saldo de monedas del usuario
+    monedas[datos_compra['nombre']] += datos_compra['cantidad']
+    return f"Monedas compradas: {datos_compra['cantidad']}"
+
+@app.route('/regalos', methods=['POST'])
+def enviar_regalo():
+    # Recibe el nombre del remitente, destinatario y el tipo de regalo
+    datos_regalo = request.get_json()
+    # Simulación: descuenta las monedas del remitente y notifica al destinatario
+    monedas[datos_regalo['remitente']] -= 1
+    return f"Regalo enviado a {datos_regalo['destinatario']}"
+
+# Otras rutas y funcionalidades deben agregarse aquí
+
+if __name__ == '__main__':
+    app.run(debug=True)
+# Ejemplo (Python/Flask):
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+# Base de datos simulada para almacenar códigos de verificación
+codigos_verificacion = {}
+
+@app.route('/enviar_codigo', methods=['POST'])
+def enviar_codigo():
+    # Recibe el correo o número de teléfono del usuario
+    datos_usuario = request.get_json()
+    # Genera un código de verificación aleatorio (puedes usar UUID o generar uno tú mismo)
+    codigo = "123456"  # Ejemplo: 6 dígitos
+    codigos_verificacion[datos_usuario['correo_o_telefono']] = codigo
+    # Envía el código al usuario (por correo o SMS)
+    return "Código de verificación enviado correctamente"
+
+@app.route('/verificar_codigo', methods=['POST'])
+def verificar_codigo():
+    # Recibe el código ingresado por el usuario
+    datos_codigo = request.get_json()
+    codigo_ingresado = datos_codigo['codigo']
+    correo_o_telefono = datos_codigo['correo_o_telefono']
+    # Verifica si el código coincide con el almacenado en la base de datos
+    if codigos_verificacion.get(correo_o_telefono) == codigo_ingresado:
+        return "Código válido. Usuario verificado."
+    else:
+        return "Código incorrecto. Inténtalo nuevamente."
+
+if __name__ == '__main__':
+    app.run(debug=True)
